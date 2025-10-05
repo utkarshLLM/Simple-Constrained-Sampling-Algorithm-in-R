@@ -1,4 +1,4 @@
-########## ------------- ########## ------------- ########## -------------
+########## ------------- Stratified Sampling Algorithm for Statistical Matching of One cohort to Other ------------- ##########
 
 # Columns we have created: gender_grouped, insurance, income, education_level, education_group, age_binary
 library(dplyr)
@@ -97,7 +97,7 @@ cat("Total rows in final sampled dataset:", nrow(sampled_df), "\n")
 
 
 
-### ### ### ### ### ### ### ### One by One method ### ### ### ### ### ### ### ### ### ### 
+### ### ### ### ### ### ### ### Sampling One by One method ### ### ### ### ### ### ### ### ### ### 
 
 ### Experiment 1
 library(dplyr)
@@ -180,26 +180,10 @@ for(group in names(sample_sizes)) {
 # Get the sample
 stratified_sample <- FULLDATA[sampled_indices, ]
 
-######NULL MODEL#####
-
-### See later
-# kidney_model_null <- glm(genetic_utilization ~ kidney_red_flag_count, 
-#                          family = binomial(link = "logit"), 
-#                          data = subset(FULLDATA, diagnosis == "kidney disease"))
-# 
-# # View the summary of the model
-# summary(kidney_model_null)  ###OR: 1.6
-# 
-# library(broom)
-# odds_ratios <- exp(coef(kidney_model_null))
-# conf_int <- exp(confint(kidney_model_null))
-# results_null_table <- cbind(OR = odds_ratios, Lower = conf_int[,1], Upper = conf_int[,2])
-# print(results_null_table)
-
 
 ############# ############# ############ Now: Randomly Sampling and Matching ~ 11,000 ############## ############### ################## ################## 
 
-# Percentages we need from table 1:
+# Target Percentages:
 
 ## Gender	%
 # Male	39.4%
@@ -373,15 +357,15 @@ set.seed(213456)
 # Sampling 14,000 from this 11,000 -> no constraints
 total_sample_size <- 11000
 ## Below not needed currently since we are not doting on insurance too much
-# target_prop_insurance = c(
-#   "private insurance" = 0.432,
-#   "medicare/medicaid/government" = 0.435,
-#   "other health insurance" = 0.023,
-#   "no insurance" = 0.001,
-#   "Missing" = 0.11,
-#   )
+target_prop_insurance = c(
+  "private insurance" = 0.432,
+  "medicare/medicaid/government" = 0.435,
+  "other health insurance" = 0.023,
+  "no insurance" = 0.001,
+  "Missing" = 0.11,
+  )
 
-sample_6_ <- sample_5_ %>% slice_sample(n = total_sample_size)
+sample_6_ <- sample_func(total_sample_size, target_prop_income, "income", sample_5_)
 
 
 # Check the previous variables' spread
@@ -391,3 +375,4 @@ print_val_ratios(sample_6_, "age_binary")
 print_val_ratios(sample_6_, "education_group")
 print_val_ratios(sample_6_, "income")
 print_val_ratios(sample_6_, "insurance")
+
